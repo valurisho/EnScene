@@ -59,7 +59,9 @@ export default function FavoriteMovies() {
                 <h2>{movie.title}</h2>
                 <p className="movie-card__rating">
                   Personal rating:{" "}
-                  {movie.personalRating > 0 ? movie.personalRating : "Not rated yet"}
+                  {movie.personalRating > 0
+                    ? movie.personalRating
+                    : "Not rated yet"}
                 </p>
                 <div className="movie-card__actions">
                   <button
