@@ -7,12 +7,38 @@ export type FetchError =
   | { kind: "http"; status: number; statusText: string }
   | { kind: "parse"; message: string };
 
-  
-//basically returns a Promise which result has a unknown type
-// signal?: AbortSignal
+const TMDB_ACCESS_TOKEN =
+  "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlZDhiN2Y0Y2FkMzA2M2ZiYWQzNWFlZTZlOWJlYzkwMiIsIm5iZiI6MTc3NTA1ODMzMy41OTYsInN1YiI6IjY5Y2QzZDlkODRkYmExMDI3Mzg3YThmMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.B7wdF_8JyWlvUh_aVtd7PGg15HjSHdwYunP4GQwRQ6Q";
 
-//request init is the type of the second parameter of fetch, which is an object that can have method, headers, body, etc.
-export async function fetchFromApi<T>(url: string, options: RequestInit = {}): Promise<Result<T>> {
+const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p";
+
+export function createTmdbRequestInit(signal?: AbortSignal): RequestInit {
+  return {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`,
+    },
+    signal,
+  };
+}
+
+//just retunrs the posted path based on the url
+export function buildMovieImageUrl(
+  posterPath: string | null,
+  size: "w342" | "w500" | "w780" | "original" = "w342",
+): string | null {
+  if (!posterPath) {
+    return null;
+  }
+
+  return `${TMDB_IMAGE_BASE_URL}/${size}${posterPath}`;
+}
+
+export async function fetchFromApi<T>(
+  url: string,
+  options: RequestInit = {},
+): Promise<Result<T>> {
   try {
     const res = await fetch(url, options);
     if (!res.ok) {
