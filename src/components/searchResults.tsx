@@ -52,7 +52,7 @@ export default function SearchResults({ query }: Props) {
     void loadMovies();
 
     return () => controller.abort();
-  }, [query]);
+  }, [query, reloadToken]);
 
   switch (state.status) {
     case "idle":
@@ -64,7 +64,10 @@ export default function SearchResults({ query }: Props) {
       );
 
     case "error":
-      return <div className="status-panel status-panel--error">{state.message}</div>;
+      return (
+        <div className="status-panel status-panel--error">
+          <p>{state.message}</p>
+          <button
             className="movie-card__button"
             onClick={() => setReloadToken((current) => current + 1)}
             type="button"
