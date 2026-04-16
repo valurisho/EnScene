@@ -27,6 +27,7 @@ function buildDiscoverUrl(genreId: number | null): string {
 }
 
 export default function MovieMain() {
+  // The search text is shared through context so multiple parts of the app can use it.
   const { debouncedQuery, searchText, setSearchText } = useSearch();
   const [reloadToken, setReloadToken] = useState(0);
   const [genreId, setGenreId] = useState<number | null>(null);
@@ -73,6 +74,7 @@ export default function MovieMain() {
     return () => controller.abort();
   }, [reloadToken, genreId]);
 
+  // If there is no search text, show the main discover movies section.
   const showDiscover = debouncedQuery === "";
 
   return (

@@ -78,6 +78,7 @@ export default function MoviePopUp({ movieId, onClose }: MoviePopUpProps) {
     return null;
   }
 
+  // Using the movie id as the key resets the popup state when a new movie is opened.
   return <MoviePopUpContent key={movieId} movieId={movieId} onClose={onClose} />;
 }
 
@@ -138,6 +139,7 @@ function MoviePopUpContent({ movieId, onClose }: { movieId: number; onClose: () 
   const backdropUrl = movie
     ? buildMovieImageUrl(movie.backdropPath, "w1280")
     : null;
+  // Favorites only need a smaller movie object, not all of the detail data.
   const favoriteCandidate = movie ? toMovieSummary(movie) : null;
   const movieIsFavorite = movie ? isFavorite(movie.id) : false;
   const existingFavorite: FavoriteMovie | undefined = movie

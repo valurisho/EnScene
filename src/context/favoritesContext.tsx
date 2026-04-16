@@ -16,11 +16,11 @@ type FavoritesProviderProps = {
 
 // creating the shared favorites state so any child can call useFavorites
 export function FavoritesProvider({ children }: FavoritesProviderProps) {
-  //initial load of favorite movies
+  // Load saved favorites from localStorage when the app first starts.
   const [favoriteMovies, setFavoriteMovies] =
     useState<FavoriteMovie[]>(loadFavoriteMovies);
 
-  //if favoriteMovies state changes then it resaves to localStorage
+  // Save favorites again every time the list changes.
   useEffect(() => {
     saveFavoriteMovies(favoriteMovies);
   }, [favoriteMovies]);
@@ -42,6 +42,7 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
       );
 
       if (isMovieFavorite) {
+        // If the movie is already saved, just update the rating.
         return currentFavorites.map((favoriteMovie) =>
           favoriteMovie.movieId === movie.id
             ? { ...favoriteMovie, personalRating }
@@ -49,6 +50,7 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
         );
       }
 
+      // If it is a new favorite, add it to the beginning of the list.
       return [toFavoriteMovie(movie, personalRating), ...currentFavorites];
     });
   }
