@@ -21,7 +21,7 @@
   box-sizing: border-box;
   padding: 14px 18px 14px 48px;
   border: none;
-  border-radius: 999px;
+  border-radius: 16px;
   font: inherit;
   font-size: 1rem;
   color: #111;
@@ -30,6 +30,11 @@
 
 .search-bar__input::placeholder {
   color: #767676;
+}
+
+.search-bar__input::-webkit-search-cancel-button {
+  transform: scale(1.35);
+  cursor: pointer;
 }
 
 .search-bar__input:focus-visible {
@@ -72,6 +77,14 @@
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--text-soft);
+}
+
+.movie-app__brand-logo {
+  display: block;
+  width: auto;
+  max-width: min(300px, 60vw);
+  height: 90px;
+  object-fit: contain;
 }
 
 .movie-app__favorite-count {

@@ -4,6 +4,7 @@ import { SearchProvider } from "./context/searchContext";
 import { useFavorites } from "./hooks/useFavorites";
 import FavoritesPage from "./pages/favoritesPage";
 import MovieMain from "./pages/movieMain";
+import logo from "./assets/logo.png";
 
 function AppShell() {
   const { favoriteMovies } = useFavorites();
@@ -12,7 +13,7 @@ function AppShell() {
     <>
       <main className="movie-app">
         <div className="movie-app__topbar">
-          <p className="movie-app__brand-mark">EnScene</p>
+          <img alt="EnScene logo" className="movie-app__brand-logo" src={logo} />
           <div aria-label={`Favorites: ${favoriteMovies.length}`} className="movie-app__favorite-count">
             <span aria-hidden="true" className="movie-app__favorite-icon">
               {favoriteMovies.length > 0 ? "♥" : "♡"}
