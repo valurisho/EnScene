@@ -103,14 +103,6 @@ src/
   types.ts         Shared TypeScript types
 ```
 
-## Deployment
-
-This project can be deployed as a static site using GitHub Pages.
-
-Deployed app:
-
-- Add your deployed link here
-
 ## Notes
 
 - A TMDB access token is required to run the app.
