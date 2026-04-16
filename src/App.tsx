@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { HashRouter, Route, Routes } from "react-router-dom";
 import { FavoritesProvider } from "./context/favoritesContext";
 import { SearchProvider } from "./context/searchContext";
 import { useFavorites } from "./hooks/useFavorites";
@@ -31,12 +31,12 @@ function AppShell() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <FavoritesProvider>
         <SearchProvider>
           <AppShell />
         </SearchProvider>
       </FavoritesProvider>
-    </BrowserRouter>
+    </HashRouter>
   );
 }

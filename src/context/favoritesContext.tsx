@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   loadFavoriteMovies,
   saveFavoriteMovies,
@@ -6,17 +6,13 @@ import {
 } from "../favoritesStorage";
 import type {
   FavoriteMovie,
-  FavoritesContextValue,
   MovieSummary,
 } from "../types";
+import { FavoritesContext } from "./favoritesContextValue";
 
 type FavoritesProviderProps = {
   children: ReactNode;
 };
-
-export const FavoritesContext = createContext<
-  FavoritesContextValue | undefined
->(undefined);
 
 // creating the shared favorites state so any child can call useFavorites
 export function FavoritesProvider({ children }: FavoritesProviderProps) {

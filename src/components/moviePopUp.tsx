@@ -74,6 +74,14 @@ function BackIcon() {
 }
 
 export default function MoviePopUp({ movieId, onClose }: MoviePopUpProps) {
+  if (movieId === null) {
+    return null;
+  }
+
+  return <MoviePopUpContent key={movieId} movieId={movieId} onClose={onClose} />;
+}
+
+function MoviePopUpContent({ movieId, onClose }: { movieId: number; onClose: () => void }) {
   const [reloadToken, setReloadToken] = useState(0);
   const [isRatingMode, setIsRatingMode] = useState(false);
   const [personalRating, setPersonalRating] = useState(3);
@@ -84,20 +92,21 @@ export default function MoviePopUp({ movieId, onClose }: MoviePopUpProps) {
   } as AsyncState<MovieDetails>);
 
   useEffect(() => {
-    if (movieId === null) {
-      dispatch({ type: "reset" });
-      return;
-    }
-
     const controller = new AbortController();
 
     async function loadMovieDetails() {
       dispatch({ type: "loadStart" });
 
-      const response = await fetchFromApi<MovieDetailsResponse>(
-        `https://api.themoviedb.org/3/movie/${movieId}?append_to_response=credits`,
-        createTmdbRequestInit(controller.signal),
-      );
+      let response;
+      try {
+        response = await fetchFromApi<MovieDetailsResponse>(
+          `https://api.themoviedb.org/3/movie/${movieId}?append_to_response=credits`,
+          createTmdbRequestInit(controller.signal),
+        );
+      } catch (error) {
+        dispatch({ type: "loadError", message: String(error) });
+        return;
+      }
 
       if (controller.signal.aborted) {
         return;
@@ -123,15 +132,6 @@ export default function MoviePopUp({ movieId, onClose }: MoviePopUpProps) {
 
     return () => controller.abort();
   }, [movieId, reloadToken]);
-
-  useEffect(() => {
-    setIsRatingMode(false);
-    setPersonalRating(3);
-  }, [movieId]);
-
-  if (movieId === null) {
-    return null;
-  }
 
   const movie = state.status === "success" ? state.data : null;
   const posterUrl = movie ? buildMovieImageUrl(movie.posterPath, "w500") : null;

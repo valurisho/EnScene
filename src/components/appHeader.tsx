@@ -1,5 +1,5 @@
 import SearchBar from "./searchBar";
-import { useSearch } from "../context/searchContext";
+import { useSearch } from "../hooks/useSearch";
 
 export default function AppHeader() {
   const { searchText, setSearchText } = useSearch();

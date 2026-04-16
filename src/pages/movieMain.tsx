@@ -2,7 +2,7 @@ import { useEffect, useReducer, useState } from "react";
 import { asyncReducer, type AsyncState } from "../asyncState";
 import { createTmdbRequestInit, fetchFromApi } from "../api";
 import { toMovieSummary } from "../movieAdapters";
-import { useSearch } from "../context/searchContext";
+import { useSearch } from "../hooks/useSearch";
 import type { DiscoverMoviesResponse, MovieSummary } from "../types";
 import PopularMovies from "../components/popularMovies";
 import SearchResults from "../components/searchResults";

@@ -7,12 +7,17 @@ export type FetchError =
   | { kind: "http"; status: number; statusText: string }
   | { kind: "parse"; message: string };
 
-const TMDB_ACCESS_TOKEN =
-  "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlZDhiN2Y0Y2FkMzA2M2ZiYWQzNWFlZTZlOWJlYzkwMiIsIm5iZiI6MTc3NTA1ODMzMy41OTYsInN1YiI6IjY5Y2QzZDlkODRkYmExMDI3Mzg3YThmMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.B7wdF_8JyWlvUh_aVtd7PGg15HjSHdwYunP4GQwRQ6Q";
+const TMDB_ACCESS_TOKEN = import.meta.env.VITE_TMDB_ACCESS_TOKEN;
 
 const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p";
 
 export function createTmdbRequestInit(signal?: AbortSignal): RequestInit {
+  if (!TMDB_ACCESS_TOKEN) {
+    throw new Error(
+      "Missing TMDB access token. Set VITE_TMDB_ACCESS_TOKEN in .env.local before running the app.",
+    );
+  }
+
   return {
     method: "GET",
     headers: {

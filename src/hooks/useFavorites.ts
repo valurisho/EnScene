@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { FavoritesContext } from "../context/favoritesContext";
+import { FavoritesContext } from "../context/favoritesContextValue";
 
 //added a custom hook just so that I can call it on my components.
 export function useFavorites() {

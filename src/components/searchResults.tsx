@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { asyncReducer, type AsyncState } from "../asyncState";
 import type { DiscoverMoviesResponse, MovieSummary } from "../types";
 import { createTmdbRequestInit, fetchFromApi } from "../api";
@@ -10,6 +10,7 @@ type Props = {
 };
 
 export default function SearchResults({ query }: Props) {
+  const [reloadToken, setReloadToken] = useState(0);
   const [state, dispatch] = useReducer(asyncReducer<MovieSummary[]>, {
     status: "idle",
   } as AsyncState<MovieSummary[]>);
@@ -64,6 +65,14 @@ export default function SearchResults({ query }: Props) {
 
     case "error":
       return <div className="status-panel status-panel--error">{state.message}</div>;
+            className="movie-card__button"
+            onClick={() => setReloadToken((current) => current + 1)}
+            type="button"
+          >
+            Retry search
+          </button>
+        </div>
+      );
 
     case "success":
       return (
