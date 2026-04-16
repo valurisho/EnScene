@@ -26,7 +26,7 @@ export function createTmdbRequestInit(signal?: AbortSignal): RequestInit {
 //just retunrs the posted path based on the url
 export function buildMovieImageUrl(
   posterPath: string | null,
-  size: "w342" | "w500" | "w780" | "original" = "w342",
+  size: "w342" | "w500" | "w780" | "w1280" | "original" = "w342",
 ): string | null {
   if (!posterPath) {
     return null;

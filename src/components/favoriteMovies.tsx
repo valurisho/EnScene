@@ -3,6 +3,10 @@ import { buildMovieImageUrl } from "../api";
 import { useFavorites } from "../hooks/useFavorites";
 import MoviePopUp from "./moviePopUp";
 
+function getReleaseYear(releaseDate: string): string {
+  return releaseDate ? releaseDate.slice(0, 4) : "Year unknown";
+}
+
 export default function FavoriteMovies() {
   const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
   const { favoriteMovies, removeFavorite } = useFavorites();
@@ -28,7 +32,7 @@ export default function FavoriteMovies() {
 
           return (
             <article
-              className="movie-card movie-card--interactive"
+              className="movie-card movie-card--interactive movie-card--browse"
               key={movie.movieId}
               onClick={() => openMovieDetails(movie.movieId)}
               onKeyDown={(event) => {
@@ -40,29 +44,42 @@ export default function FavoriteMovies() {
               role="button"
               tabIndex={0}
             >
-              {posterUrl ? (
-                <img
-                  alt={`${movie.title} poster`}
-                  className="movie-card__poster"
-                  src={posterUrl}
-                />
-              ) : (
-                <div className="movie-card__poster movie-card__poster--placeholder">
-                  No poster
-                </div>
-              )}
+              <div className="movie-card__media">
+                {posterUrl ? (
+                  <img
+                    alt={`${movie.title} poster`}
+                    className="movie-card__poster"
+                    src={posterUrl}
+                  />
+                ) : (
+                  <div className="movie-card__poster movie-card__poster--placeholder">
+                    No poster
+                  </div>
+                )}
+                <div className="movie-card__shade" />
+                <span aria-hidden="true" className="movie-card__heart movie-card__heart--active">
+                  ♥
+                </span>
+              </div>
 
               <div className="movie-card__content">
-                <p className="movie-card__meta">
-                  {movie.releaseDate || "Release date unavailable"}
-                </p>
-                <h2>{movie.title}</h2>
-                <p className="movie-card__rating">
-                  Personal rating:{" "}
-                  {movie.personalRating > 0
-                    ? movie.personalRating
-                    : "Not rated yet"}
-                </p>
+                <h2 className="movie-card__title">{movie.title}</h2>
+                <div className="movie-card__meta-row">
+                  <span>{getReleaseYear(movie.releaseDate)}</span>
+                  <span className="movie-card__dot">•</span>
+                  <span className="movie-card__runtime-muted">
+                    {movie.personalRating > 0
+                      ? `Your rating: ${movie.personalRating} / 5`
+                      : "Not rated yet"}
+                  </span>
+                </div>
+                <div className="movie-card__score">
+                  <span className="movie-card__score-star">★</span>
+                  <span className="movie-card__score-value">
+                    {movie.personalRating > 0 ? movie.personalRating.toFixed(1) : "—"}
+                  </span>
+                  <span className="movie-card__score-scale">/ 5</span>
+                </div>
                 <div className="movie-card__actions">
                   <button
                     className="movie-card__button"

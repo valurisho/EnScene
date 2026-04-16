@@ -1,27 +1,30 @@
 :root {
-  --text: #c9cbc3;
-  --text-soft: rgba(248, 250, 237, 0.72);
-  --text-h: #f8faed;
-  --bg: #181717;
-  --panel: #121111;
-  --border: rgba(248, 250, 237, 0.1);
-  --code-bg: #201d1d;
-  --accent: #a91c1a;
-  --accent-strong: #620000;
-  --accent-bg: rgba(169, 28, 26, 0.18);
-  --highlight: #cfe7f3;
-  --highlight-border: rgba(207, 231, 243, 0.4);
-  --social-bg: rgba(24, 23, 23, 0.85);
+  --text: #a0a0a0;
+  --text-soft: #a0a0a0;
+  --text-h: #ffffff;
+  --bg: #121212;
+  --panel: #1e1e1e;
+  --border: rgba(255, 255, 255, 0.12);
+  --code-bg: #1e1e1e;
+  --accent: #e50914;
+  --accent-strong: #b20710;
+  --accent-bg: rgba(229, 9, 20, 0.16);
+  --highlight: #ffffff;
+  --highlight-border: rgba(255, 255, 255, 0.2);
+  --social-bg: rgba(30, 30, 30, 0.92);
   --shadow:
-    rgba(0, 0, 0, 0.42) 0 22px 40px -22px,
-    rgba(0, 0, 0, 0.25) 0 12px 18px -12px;
+    rgba(0, 0, 0, 0.45) 0 20px 36px -24px,
+    rgba(0, 0, 0, 0.28) 0 10px 16px -12px;
 
-  --sans: "Segoe UI", Roboto, sans-serif;
-  --heading: "Segoe UI", Roboto, sans-serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --heading: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-serif: Georgia, "Times New Roman", ui-serif, serif;
   --mono: ui-monospace, Consolas, monospace;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
+  font-family: var(--sans);
+  font-size: clamp(18px, 0.5vw + 16px, 22px);
+  line-height: 145%;
+  letter-spacing: 0.02em;
   color-scheme: dark;
   color: var(--text);
   background: var(--bg);
@@ -29,17 +32,13 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
 }
 
 #root {
-  width: min(1260px, 100%);
+  width: min(90vw, 1600px);
   max-width: 100%;
   margin: 0 auto;
-  text-align: center;
+  text-align: left;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
@@ -48,34 +47,26 @@
 
 body {
   margin: 0;
-  background:
-    radial-gradient(circle at top right, rgba(169, 28, 26, 0.18), transparent 26%),
-    linear-gradient(180deg, #181717 0%, #121111 100%);
+  background: var(--bg);
 }
 
 h1,
 h2 {
   font-family: var(--heading);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-h);
 }
 
 h1 {
-  font-size: 56px;
-  letter-spacing: -1.8px;
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
   margin: 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-  }
 }
 h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
+  font-size: 1.125rem;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
   margin: 0;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
 }
 p {
   margin: 0;

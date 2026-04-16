@@ -40,6 +40,7 @@ export type MovieSummary = {
 };
 
 export type MovieDetailsResponse = MovieApi & {
+  tagline?: string;
   runtime: number | null;
   genres: Array<{ id: number; name: string }>;
   credits?: {
@@ -60,6 +61,7 @@ export type MovieDetails = {
   runtime: number | null;
   genres: string[];
   director: string | null;
+  tagline: string;
 };
 
 export type FavoriteMovie = {

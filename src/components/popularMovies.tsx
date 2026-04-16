@@ -41,7 +41,7 @@ export default function PopularMovies({
 
           return (
             <article
-              className="movie-card movie-card--interactive"
+              className="movie-card movie-card--interactive movie-card--browse"
               key={movie.id}
               onClick={() => openMovieDetails(movie.id)}
               onKeyDown={(event) => {
@@ -66,16 +66,6 @@ export default function PopularMovies({
                   </div>
                 )}
                 <div className="movie-card__shade" />
-                <button
-                  className="movie-card__preview"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    openMovieDetails(movie.id);
-                  }}
-                  type="button"
-                >
-                  Preview
-                </button>
                 <span
                   aria-hidden="true"
                   className={`movie-card__heart ${isFavorite(movie.id) ? "movie-card__heart--active" : ""}`}
@@ -89,7 +79,7 @@ export default function PopularMovies({
                 <div className="movie-card__meta-row">
                   <span>{getReleaseYear(movie.releaseDate)}</span>
                   <span className="movie-card__dot">•</span>
-                  <span>Runtime in details</span>
+                  <span className="movie-card__runtime-muted">See details</span>
                 </div>
                 <div className="movie-card__score">
                   <span className="movie-card__score-star">★</span>

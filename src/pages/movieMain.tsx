@@ -2,25 +2,37 @@ import { useEffect, useReducer, useState } from "react";
 import { asyncReducer, type AsyncState } from "../asyncState";
 import { createTmdbRequestInit, fetchFromApi } from "../api";
 import { toMovieSummary } from "../movieAdapters";
+import { useSearch } from "../context/searchContext";
 import type { DiscoverMoviesResponse, MovieSummary } from "../types";
 import PopularMovies from "../components/popularMovies";
 import SearchResults from "../components/searchResults";
+import MainTabs from "../components/mainTabs";
+import SearchBar from "../components/searchBar";
+
+const QUICK_GENRES: Array<{ label: string; id: number }> = [
+  { label: "Action", id: 28 },
+  { label: "Drama", id: 18 },
+  { label: "Sci-Fi", id: 878 },
+  { label: "Horror", id: 27 },
+  { label: "Romance", id: 10749 },
+];
+
+function buildDiscoverUrl(genreId: number | null): string {
+  const base =
+    "https://api.themoviedb.org/3/discover/movie?include_adult=false&sort_by=popularity.desc";
+  if (genreId === null) {
+    return base;
+  }
+  return `${base}&with_genres=${genreId}`;
+}
 
 export default function MovieMain() {
-  const [searchText, setSearchText] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const { debouncedQuery, searchText, setSearchText } = useSearch();
   const [reloadToken, setReloadToken] = useState(0);
+  const [genreId, setGenreId] = useState<number | null>(null);
   const [state, dispatch] = useReducer(asyncReducer<MovieSummary[]>, {
     status: "idle",
   } as AsyncState<MovieSummary[]>);
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setDebouncedQuery(searchText.trim());
-    }, 400);
-
-    return () => clearTimeout(timeoutId);
-  }, [searchText]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -29,7 +41,7 @@ export default function MovieMain() {
       dispatch({ type: "loadStart" });
 
       const response = await fetchFromApi<DiscoverMoviesResponse>(
-        "https://api.themoviedb.org/3/discover/movie?include_adult=false&sort_by=popularity.desc",
+        buildDiscoverUrl(genreId),
         createTmdbRequestInit(controller.signal),
       );
 
@@ -59,61 +71,64 @@ export default function MovieMain() {
     void loadMovies();
 
     return () => controller.abort();
-  }, [reloadToken]);
+  }, [reloadToken, genreId]);
 
-  switch (state.status) {
-    case "idle":
-      return (
-        <main className="movie-app">
-          <div className="status-panel">
-            <p>Loading movies...</p>
-          </div>
-        </main>
-      );
-    case "error":
-      return (
-        <>
-          <div className="status-panel status-panel--error">
-            <p>{state.message}</p>
-            <button
-              className="movie-card__button"
-              onClick={() => setReloadToken((current) => current + 1)}
-              type="button"
-            >
-              Retry request
-            </button>
-          </div>
-        </>
-      );
-    case "loading":
-      return (
-        <>
-          <div className="status-panel">
-            <p>Loading trending movies...</p>
-          </div>
-        </>
-      );
-    case "success":
-      return (
-        <>
-          <div className="movie-page__intro">
-            <p className="movie-app__subtitle">
-              Browse popular movies, search the catalog, and save personal
-              favorites to revisit later.
-            </p>
-          </div>
-          <input
-            className="movie-app__search"
-            value={searchText}
-            onChange={(event) => setSearchText(event.target.value)}
-            placeholder="Search movies..."
-          />
-          {debouncedQuery === "" ? (
-            <PopularMovies emptyMessage="No discover movies are available right now." movieList={state.data} />
-          ) : (
-            <SearchResults query={debouncedQuery} />
-          )}
-        </>
-      );
-  }
+  const showDiscover = debouncedQuery === "";
+
+  return (
+    <>
+      <MainTabs />
+
+      <SearchBar
+        onChange={setSearchText}
+        placeholder="Search for movies..."
+        value={searchText}
+        variant="dark"
+      />
+
+      <div className="movie-app__quick-row">
+        <span className="movie-app__quick-label">Quick:</span>
+        <div className="movie-app__quick-filters" role="group" aria-label="Genre filters">
+          {QUICK_GENRES.map((g) => {
+            const isActive = genreId === g.id;
+            return (
+              <button
+                className={`movie-app__quick-pill ${isActive ? "movie-app__quick-pill--active" : ""}`}
+                key={g.label}
+                onClick={() => setGenreId((current) => (current === g.id ? null : g.id))}
+                type="button"
+              >
+                {g.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {state.status === "error" && (
+        <div className="status-panel status-panel--error">
+          <p>{state.message}</p>
+          <button
+            className="movie-card__button"
+            onClick={() => setReloadToken((current) => current + 1)}
+            type="button"
+          >
+            Retry request
+          </button>
+        </div>
+      )}
+
+      {(state.status === "idle" || state.status === "loading") && showDiscover && (
+        <div className="status-panel status-panel--muted">
+          <p>Loading movies...</p>
+        </div>
+      )}
+
+      {state.status === "success" && showDiscover && (
+        <PopularMovies emptyMessage="No discover movies are available right now." movieList={state.data} />
+      )}
+
+      {!showDiscover && <SearchResults query={debouncedQuery} />}
+    </>
+  );
 }

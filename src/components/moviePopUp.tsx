@@ -53,6 +53,26 @@ function toMovieSummary(movie: MovieDetails): MovieSummary {
   };
 }
 
+function BackIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      fill="none"
+      height="22"
+      viewBox="0 0 24 24"
+      width="22"
+    >
+      <path
+        d="M15 18 9 12l6-6"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      />
+    </svg>
+  );
+}
+
 export default function MoviePopUp({ movieId, onClose }: MoviePopUpProps) {
   const [reloadToken, setReloadToken] = useState(0);
   const [isRatingMode, setIsRatingMode] = useState(false);
@@ -116,7 +136,7 @@ export default function MoviePopUp({ movieId, onClose }: MoviePopUpProps) {
   const movie = state.status === "success" ? state.data : null;
   const posterUrl = movie ? buildMovieImageUrl(movie.posterPath, "w500") : null;
   const backdropUrl = movie
-    ? buildMovieImageUrl(movie.backdropPath, "w780")
+    ? buildMovieImageUrl(movie.backdropPath, "w1280")
     : null;
   const favoriteCandidate = movie ? toMovieSummary(movie) : null;
   const movieIsFavorite = movie ? isFavorite(movie.id) : false;
@@ -138,110 +158,155 @@ export default function MoviePopUp({ movieId, onClose }: MoviePopUpProps) {
     setIsRatingMode(false);
   }
 
+  const heroStyle =
+    backdropUrl !== null
+      ? {
+          backgroundImage: `linear-gradient(
+            to bottom,
+            rgba(10, 10, 10, 0.05) 0%,
+            rgba(10, 10, 10, 0.55) 55%,
+            #0a0a0a 100%
+          ), url(${backdropUrl})`,
+        }
+      : undefined;
+
   return (
-    <div className="dialog-backdrop" onClick={onClose}>
+    <div
+      className="dialog-backdrop dialog-backdrop--cinematic"
+      onClick={onClose}
+      role="presentation"
+    >
       <section
         aria-labelledby="movie-dialog-title"
         aria-modal="true"
-        className="dialog dialog--fullscreen"
+        className="dialog dialog--fullscreen dialog--cinematic"
         onClick={(event) => event.stopPropagation()}
         role="dialog"
       >
         <div
-          className="dialog__backdrop-hero"
-          style={
-            backdropUrl
-              ? { backgroundImage: `linear-gradient(180deg, rgba(8, 8, 8, 0.08), rgba(8, 8, 8, 0.86)), url(${backdropUrl})` }
-              : undefined
-          }
+          className="dialog__backdrop-hero dialog__backdrop-hero--cinematic"
+          style={heroStyle}
         >
-          <div className="dialog__header">
-            <p className="dialog__eyebrow">Movie details</p>
-            <button className="dialog__close" onClick={onClose} type="button">
-              Close
-            </button>
-          </div>
+          <button
+            aria-label="Go back"
+            className="dialog__hero-back"
+            onClick={onClose}
+            type="button"
+          >
+            <BackIcon />
+          </button>
         </div>
 
-        {state.status === "loading" || state.status === "idle" ? (
-          <div className="status-panel">
-            <p>Loading movie details...</p>
-          </div>
-        ) : null}
+        <div className="dialog__sheet--cinematic">
+          {state.status === "loading" || state.status === "idle" ? (
+            <div className="dialog__status dialog__status--cinematic">
+              <p>Loading movie details...</p>
+            </div>
+          ) : null}
 
-        {state.status === "error" ? (
-          <div className="status-panel status-panel--error">
-            <p>{state.message}</p>
-            <button
-              className="movie-card__button"
-              onClick={() => setReloadToken((current) => current + 1)}
-              type="button"
-            >
-              Retry
-            </button>
-          </div>
-        ) : null}
+          {state.status === "error" ? (
+            <div className="dialog__status dialog__status--cinematic dialog__status--error">
+              <p>{state.message}</p>
+              <button
+                className="movie-card__button"
+                onClick={() => setReloadToken((current) => current + 1)}
+                type="button"
+              >
+                Retry
+              </button>
+            </div>
+          ) : null}
 
-        {movie ? (
-          <div className="dialog__sheet">
-            <div className="dialog__body">
-            {posterUrl ? (
-              <img
-                alt={`${movie.title} poster`}
-                className="dialog__poster"
-                src={posterUrl}
+          {movie && isRatingMode ? (
+            <div className="dialog__rating-panel">
+              <FavoriteRatingDialog
+                movieTitle={movie.title}
+                onCancel={() => setIsRatingMode(false)}
+                onRatingChange={setPersonalRating}
+                onSave={handleSaveFavorite}
+                rating={personalRating}
               />
-            ) : (
-              <div className="dialog__poster dialog__poster--placeholder">
-                Poster unavailable
+            </div>
+          ) : null}
+
+          {movie && !isRatingMode ? (
+            <div className="dialog__body--cinematic">
+              <div className="dialog__poster-column">
+                {posterUrl ? (
+                  <img
+                    alt={`${movie.title} poster`}
+                    className="dialog__poster dialog__poster--framed"
+                    src={posterUrl}
+                  />
+                ) : (
+                  <div className="dialog__poster dialog__poster--framed dialog__poster--placeholder">
+                    Poster unavailable
+                  </div>
+                )}
               </div>
-            )}
 
-            <div className="dialog__content">
-              {isRatingMode ? (
-                <FavoriteRatingDialog
-                  movieTitle={movie.title}
-                  onCancel={() => setIsRatingMode(false)}
-                  onRatingChange={setPersonalRating}
-                  onSave={handleSaveFavorite}
-                  rating={personalRating}
-                />
-              ) : (
-                <>
-                  <div className="dialog__hero">
-                    <h2 id="movie-dialog-title" className="dialog__title">
-                      {movie.title}
-                    </h2>
-                    <div className="dialog__meta">
-                      <span>{getReleaseYear(movie.releaseDate)}</span>
-                      <span>{movie.director || "Director unavailable"}</span>
-                    </div>
-                    <div className="dialog__facts">
-                      <span>{formatRuntime(movie.runtime)}</span>
-                      <span>{movie.voteAverage.toFixed(1)} / 10</span>
-                      {existingFavorite ? (
-                        <span>Your rating: {existingFavorite.personalRating} / 5</span>
-                      ) : null}
-                    </div>
-                  </div>
-
-                  <p className="dialog__overview">
-                    {movie.overview || "No overview available for this movie yet."}
+              <div className="dialog__main-column">
+                <div className="dialog__title-block">
+                  <h2
+                    className="dialog__title dialog__title--cinematic"
+                    id="movie-dialog-title"
+                  >
+                    {movie.title}
+                  </h2>
+                  <p className="dialog__title-meta">
+                    <span>{getReleaseYear(movie.releaseDate)}</span>
+                    <span className="dialog__title-meta-sep">·</span>
+                    <span>
+                      Directed by {movie.director || "Unknown"}
+                    </span>
                   </p>
+                </div>
 
-                  <div className="dialog__tags">
-                    {movie.genres.length > 0 ? (
-                      movie.genres.map((genre) => (
-                        <span className="dialog__tag" key={genre}>
-                          {genre}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="dialog__tag">Genres unavailable</span>
-                    )}
+                {movie.tagline ? (
+                  <p className="dialog__tagline">{movie.tagline}</p>
+                ) : null}
+
+                <p className="dialog__overview dialog__overview--cinematic">
+                  {movie.overview ||
+                    "No overview available for this movie yet."}
+                </p>
+
+                <div className="dialog__tags dialog__tags--cinematic">
+                  {movie.genres.length > 0 ? (
+                    movie.genres.map((genre) => (
+                      <span className="dialog__tag dialog__tag--cinematic" key={genre}>
+                        {genre}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="dialog__tag dialog__tag--cinematic">
+                      Genres unavailable
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <aside className="dialog__aside" aria-label="Movie actions">
+                <div className="dialog__widget">
+                  <div className="dialog__widget-row">
+                    <span className="dialog__widget-label">Runtime</span>
+                    <span className="dialog__widget-value">
+                      {formatRuntime(movie.runtime)}
+                    </span>
                   </div>
-
-                  <div className="dialog__actions">
+                  <div className="dialog__widget-row">
+                    <span className="dialog__widget-label">TMDB score</span>
+                    <span className="dialog__widget-value dialog__widget-value--accent">
+                      ★ {movie.voteAverage.toFixed(1)} / 10
+                    </span>
+                  </div>
+                  <hr className="dialog__widget-rule" />
+                  {movieIsFavorite && existingFavorite ? (
+                    <p className="dialog__widget-note">
+                      Your rating: {existingFavorite.personalRating} / 5
+                    </p>
+                  ) : null}
+                  <div className="dialog__widget-actions">
                     {movieIsFavorite ? (
                       <>
                         <button
@@ -269,12 +334,11 @@ export default function MoviePopUp({ movieId, onClose }: MoviePopUpProps) {
                       </button>
                     )}
                   </div>
-                </>
-              )}
+                </div>
+              </aside>
             </div>
-          </div>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
       </section>
     </div>
   );

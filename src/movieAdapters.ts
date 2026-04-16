@@ -30,5 +30,6 @@ export function toMovieDetails(movie: MovieDetailsResponse): MovieDetails {
     runtime: movie.runtime,
     genres: movie.genres.map((genre) => genre.name),
     director,
+    tagline: movie.tagline?.trim() ?? "",
   };
 }
